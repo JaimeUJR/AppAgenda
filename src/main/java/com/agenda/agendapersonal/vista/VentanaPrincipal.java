@@ -390,7 +390,7 @@ public class VentanaPrincipal extends JFrame {
         tabla.setGridColor(new Color(233, 236, 239));
         tabla.setSelectionBackground(new Color(232, 240, 254));
         tabla.setSelectionForeground(new Color(33, 37, 41));
-        tabla.setBackground(Color.GRAY);
+        tabla.setBackground(new Color(248, 249, 250)); // Fondo gris claro para las filas
         tabla.setForeground(new Color(33, 37, 41)); // Texto más oscuro y visible
         tabla.setShowVerticalLines(true);
         tabla.setShowHorizontalLines(true);
@@ -443,10 +443,22 @@ public class VentanaPrincipal extends JFrame {
     }
     
     private void abrirFormularioNuevaTarea() {
-        JOptionPane.showMessageDialog(this, 
-            "Función 'Nueva Tarea' - Aquí se abriría el formulario de creación", 
-            "Nueva Tarea", 
-            JOptionPane.INFORMATION_MESSAGE);
+        FormularioNuevaTarea formulario = new FormularioNuevaTarea(this, agendaControlador);
+        formulario.setVisible(true);
+    }
+    
+    /**
+     * Método para actualizar los datos del dashboard después de crear una nueva tarea
+     */
+    public void actualizarDatos() {
+        // Recrear el panel de estadísticas y tabla
+        if (agendaControlador.getUsuarioControlador().hayUsuarioAutenticado()) {
+            SwingUtilities.invokeLater(() -> {
+                // Forzar actualización del dashboard
+                crearPanelDashboard();
+                mostrarPanelDashboard();
+            });
+        }
     }
     
     private void configurarEventos() {
