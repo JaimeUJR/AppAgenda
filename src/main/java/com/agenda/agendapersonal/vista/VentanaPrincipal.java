@@ -502,6 +502,7 @@ public class VentanaPrincipal extends JFrame {
                 System.out.println("DEBUG: Login exitoso, mostrando dashboard");
                 mostrarPanelDashboard();
                 actualizarInterfaz();
+                actualizarDatos();
                 actualizarEstado("Sesión iniciada correctamente");
                 System.out.println("DEBUG: Dashboard mostrado");
             } else {
