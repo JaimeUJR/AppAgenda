@@ -32,6 +32,17 @@ public class VentanaPrincipal extends JFrame {
     // Componentes de la tabla
     private JTable tablaTareas;
     private DefaultTableModel modeloTabla;
+    
+    // Componentes de filtrado
+    private JButton btnTodas;
+    private JButton btnPendientes;
+    private JButton btnCompletadas;
+    private FiltroTarea filtroActual = FiltroTarea.TODAS;
+    
+    // Enum para tipos de filtro
+    public enum FiltroTarea {
+        TODAS, PENDIENTES, COMPLETADAS
+    }
 
     public VentanaPrincipal() {
         this.agendaControlador = new AgendaControlador();
@@ -288,9 +299,14 @@ public class VentanaPrincipal extends JFrame {
         filtrosIzq.setBackground(new Color(240, 242, 245));
 
         // Botones de filtro con mejor estilo
-        JButton btnTodas = crearBotonFiltro("Todas", true);
-        JButton btnPendientes = crearBotonFiltro("Pendientes", false);
-        JButton btnCompletadas = crearBotonFiltro("Completadas", false);
+        btnTodas = crearBotonFiltro("Todas", true);
+        btnPendientes = crearBotonFiltro("Pendientes", false);
+        btnCompletadas = crearBotonFiltro("Completadas", false);
+        
+        // Agregar listeners a los botones de filtro
+        btnTodas.addActionListener(e -> aplicarFiltro(FiltroTarea.TODAS));
+        btnPendientes.addActionListener(e -> aplicarFiltro(FiltroTarea.PENDIENTES));
+        btnCompletadas.addActionListener(e -> aplicarFiltro(FiltroTarea.COMPLETADAS));
 
         filtrosIzq.add(btnTodas);
         filtrosIzq.add(Box.createHorizontalStrut(8));
@@ -451,23 +467,8 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void cargarDatosTabla(DefaultTableModel modelo) {
-        // Limpiar tabla
-        modelo.setRowCount(0);
-
-        // Obtener eventos del usuario actual
-        List<Evento> eventos = agendaControlador.getEventoControlador().obtenerEventosUsuario();
-
-        // Agregar filas a la tabla
-        for (Evento evento : eventos) {
-            Object[] fila = {
-                evento.getIdEvento(),
-                evento.getEstado(),
-                evento.getTitulo(),
-                evento.getDescripcion() != null ? evento.getDescripcion() : "",
-                evento.getFechaInicioFormateada()
-            };
-            modelo.addRow(fila);
-        }
+        // Usar el método de filtrado en lugar de cargar todo directamente
+        cargarDatosFiltrados();
     }
 
     /**
@@ -520,8 +521,8 @@ public class VentanaPrincipal extends JFrame {
                 timer.setRepeats(false);
                 timer.start();
                 
-                // Actualizar estadísticas del dashboard
-                actualizarDatos();
+                // Aplicar filtro actual para actualizar la vista
+                SwingUtilities.invokeLater(() -> cargarDatosFiltrados());
                 
             } else {
                 JOptionPane.showMessageDialog(this, 
@@ -555,7 +556,114 @@ public class VentanaPrincipal extends JFrame {
                 // Forzar actualización del dashboard
                 crearPanelDashboard();
                 mostrarPanelDashboard();
+                
+                // Mantener el filtro actual después de actualizar
+                SwingUtilities.invokeLater(() -> {
+                    actualizarEstadoFiltros();
+                    cargarDatosFiltrados();
+                });
             });
+        }
+    }
+
+    /**
+     * Aplicar filtro a la tabla de tareas
+     */
+    private void aplicarFiltro(FiltroTarea filtro) {
+        this.filtroActual = filtro;
+        
+        // Actualizar estado visual de los botones
+        actualizarEstadoFiltros();
+        
+        // Filtrar y cargar datos en la tabla
+        cargarDatosFiltrados();
+        
+        // Mostrar mensaje de estado
+        String mensaje = switch (filtro) {
+            case TODAS -> "📋 Mostrando todas las tareas";
+            case PENDIENTES -> "⏳ Mostrando tareas pendientes";
+            case COMPLETADAS -> "✅ Mostrando tareas completadas";
+        };
+        
+        lblEstado.setText(mensaje);
+        lblEstado.setForeground(new Color(108, 117, 125));
+        
+        // Limpiar mensaje después de 2 segundos
+        Timer timer = new Timer(2000, e -> {
+            lblEstado.setText("Sistema listo");
+            lblEstado.setForeground(new Color(108, 117, 125));
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+    
+    /**
+     * Actualizar el estado visual de los botones de filtro
+     */
+    private void actualizarEstadoFiltros() {
+        // Restablecer todos los botones como inactivos
+        configurarBotonFiltro(btnTodas, false);
+        configurarBotonFiltro(btnPendientes, false);
+        configurarBotonFiltro(btnCompletadas, false);
+        
+        // Activar el botón correspondiente al filtro actual
+        switch (filtroActual) {
+            case TODAS -> configurarBotonFiltro(btnTodas, true);
+            case PENDIENTES -> configurarBotonFiltro(btnPendientes, true);
+            case COMPLETADAS -> configurarBotonFiltro(btnCompletadas, true);
+        }
+    }
+    
+    /**
+     * Configurar el aspecto visual de un botón de filtro
+     */
+    private void configurarBotonFiltro(JButton boton, boolean activo) {
+        if (activo) {
+            boton.setBackground(new Color(101, 116, 205));
+            boton.setForeground(new Color(50, 50, 50));
+            boton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(101, 116, 205), 3, true),
+                    BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+        } else {
+            boton.setBackground(Color.WHITE);
+            boton.setForeground(new Color(50, 50, 50));
+            boton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(222, 226, 230), 3, true),
+                    BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+        }
+    }
+    
+    /**
+     * Cargar datos filtrados en la tabla
+     */
+    private void cargarDatosFiltrados() {
+        // Limpiar tabla
+        modeloTabla.setRowCount(0);
+
+        // Obtener eventos del usuario actual
+        List<Evento> eventos = agendaControlador.getEventoControlador().obtenerEventosUsuario();
+
+        // Filtrar eventos según el filtro actual
+        List<Evento> eventosFiltrados = eventos.stream()
+            .filter(evento -> {
+                return switch (filtroActual) {
+                    case TODAS -> true;
+                    case PENDIENTES -> evento.getEstado() == EstadoEvento.PENDIENTE;
+                    case COMPLETADAS -> evento.getEstado() == EstadoEvento.COMPLETADO;
+                };
+            })
+            .toList();
+
+        // Agregar filas filtradas a la tabla
+        for (Evento evento : eventosFiltrados) {
+            Object[] fila = {
+                evento.getIdEvento(),
+                evento.getEstado(),
+                evento.getTitulo(),
+                evento.getDescripcion() != null ? evento.getDescripcion() : "",
+                evento.getFechaInicioFormateada()
+            };
+            modeloTabla.addRow(fila);
         }
     }
 
