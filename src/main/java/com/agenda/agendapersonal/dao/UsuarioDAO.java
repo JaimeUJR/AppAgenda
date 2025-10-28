@@ -23,7 +23,7 @@ public class UsuarioDAO {
      * Crear un nuevo usuario
      */
     public boolean crear(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nombre_usuario, email, password, nombre_completo) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nombre_usuario, email, password, nombre_completo) VALUES (?, ?, SHA2(?, 256), ?)";
         
         try (Connection conn = conexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
