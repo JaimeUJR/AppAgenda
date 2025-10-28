@@ -6,17 +6,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Formulario para el registro de nuevos usuarios
- * 
- * @author JaimeSQL
- */
 public class FormularioRegistro extends JDialog {
     
     private VentanaPrincipal ventanaPadre;
     private UsuarioControlador usuarioControlador;
     
-    // Componentes del formulario
     private JTextField txtNombreUsuario;
     private JTextField txtEmail;
     private JPasswordField txtPassword;
@@ -278,9 +272,6 @@ public class FormularioRegistro extends JDialog {
         btnCancelar.setEnabled(true);
     }
     
-    /**
-     * Limpiar todos los campos del formulario
-     */
     public void limpiarFormulario() {
         txtNombreUsuario.setText("");
         txtEmail.setText("");
@@ -292,9 +283,6 @@ public class FormularioRegistro extends JDialog {
         txtNombreUsuario.requestFocus();
     }
     
-    /**
-     * Establecer el foco en el primer campo
-     */
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);

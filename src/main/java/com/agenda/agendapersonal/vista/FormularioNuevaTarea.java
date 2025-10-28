@@ -9,11 +9,6 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Calendar;
 
-/**
- * Formulario para crear una nueva tarea
- * 
- * @author JaimeSQL
- */
 public class FormularioNuevaTarea extends JDialog {
 
     private AgendaControlador agendaControlador;

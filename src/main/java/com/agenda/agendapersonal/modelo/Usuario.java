@@ -3,11 +3,6 @@ package com.agenda.agendapersonal.modelo;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Clase modelo que representa un usuario del sistema de agenda personal
- * 
- * @author JaimeSQL
- */
 public class Usuario {
 
     private int idUsuario;

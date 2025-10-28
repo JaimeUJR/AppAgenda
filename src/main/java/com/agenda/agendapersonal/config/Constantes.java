@@ -1,19 +1,11 @@
 package com.agenda.agendapersonal.config;
 
-/**
- * Clase de constantes para la aplicación de Agenda Personal
- * 
- * @author JaimeSQL
- */
 public class Constantes {
     
-    // Configuración de base de datos
     public static final String BD_NOMBRE = "agenda_personal";
     public static final String BD_HOST_DEFECTO = "localhost";
     public static final String BD_PUERTO_DEFECTO = "3306";
     public static final String BD_USUARIO_DEFECTO = "root";
-    
-    // Configuración de la aplicación
     public static final String APP_NOMBRE = "Agenda Personal";
     public static final String APP_VERSION = "1.0.0";
     public static final String APP_AUTOR = "JaimeSQL";

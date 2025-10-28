@@ -13,11 +13,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
-/**
- * Ventana principal de la aplicación Agenda Personal
- * 
- * @author JaimeSQL
- */
 public class VentanaPrincipal extends JFrame {
 
     private AgendaControlador agendaControlador;
@@ -25,9 +20,20 @@ public class VentanaPrincipal extends JFrame {
     private JLabel lblEstado;
     private JLabel lblUsuario;
 
-    // Paneles de contenido
     private JPanel panelLogin;
     private JPanel panelDashboard;
+    
+    private JTable tablaTareas;
+    private DefaultTableModel modeloTabla;
+    
+    private JButton btnTodas;
+    private JButton btnPendientes;
+    private JButton btnCompletadas;
+    private FiltroTarea filtroActual = FiltroTarea.TODAS;
+    
+    public enum FiltroTarea {
+        TODAS, PENDIENTES, COMPLETADAS
+    }
 
     public VentanaPrincipal() {
         this.agendaControlador = new AgendaControlador();
@@ -35,9 +41,6 @@ public class VentanaPrincipal extends JFrame {
         inicializarAplicacion();
     }
 
-    /**
-     * Inicializar componentes de la interfaz
-     */
     private void initComponents() {
         setTitle(Constantes.obtenerTituloCompleto());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -131,7 +134,6 @@ public class VentanaPrincipal extends JFrame {
         gbc.gridy = 5;
         panelLogin.add(btnCrearCuenta, gbc);
 
-        // Eventos
         btnLogin.addActionListener(e -> {
             String usuario = txtUsuario.getText();
             String password = new String(txtPassword.getPassword());
@@ -145,7 +147,6 @@ public class VentanaPrincipal extends JFrame {
             formulario.setVisible(true);
         });
 
-        // Enter para login
         txtPassword.addActionListener(e -> {
             String usuario = txtUsuario.getText();
             String password = new String(txtPassword.getPassword());
@@ -157,35 +158,26 @@ public class VentanaPrincipal extends JFrame {
 
     private void crearPanelDashboard() {
         panelDashboard = new JPanel(new BorderLayout());
-        panelDashboard.setBackground(new Color(240, 242, 245)); // Fondo gris claro
+        panelDashboard.setBackground(new Color(240, 242, 245));
 
-        // ===== HEADER PRINCIPAL =====
         JPanel headerPanel = crearHeaderModerno();
-
-        // ===== ESTADÍSTICAS =====
         JPanel estadisticasPanel = crearPanelEstadisticas();
-
-        // ===== FILTROS Y NUEVA TAREA =====
         JPanel filtrosPanel = crearPanelFiltros();
-
-        // ===== TABLA DE TAREAS =====
         JPanel tablaPanel = crearPanelTabla();
 
-        // ===== PANEL CENTRAL (Estadísticas + Filtros + Tabla) =====
         JPanel centralPanel = new JPanel(new BorderLayout(0, 25));
-        centralPanel.setBackground(new Color(240, 242, 245)); // Fondo gris claro
+        centralPanel.setBackground(new Color(240, 242, 245));
         centralPanel.setBorder(BorderFactory.createEmptyBorder(25, 35, 35, 35));
 
         centralPanel.add(estadisticasPanel, BorderLayout.NORTH);
 
         JPanel filtrosYTabla = new JPanel(new BorderLayout(0, 20));
-        filtrosYTabla.setBackground(new Color(240, 242, 245)); // Fondo gris claro
+        filtrosYTabla.setBackground(new Color(240, 242, 245));
         filtrosYTabla.add(filtrosPanel, BorderLayout.NORTH);
         filtrosYTabla.add(tablaPanel, BorderLayout.CENTER);
 
         centralPanel.add(filtrosYTabla, BorderLayout.CENTER);
 
-        // ===== ENSAMBLAR DASHBOARD =====
         panelDashboard.add(headerPanel, BorderLayout.NORTH);
         panelDashboard.add(centralPanel, BorderLayout.CENTER);
 
@@ -193,26 +185,22 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private JPanel crearHeaderModerno() {
-        // Container con padding
         JPanel headerContainer = new JPanel(new BorderLayout());
         headerContainer.setBackground(new Color(240, 242, 245));
         headerContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
-        // Header principal redondeado
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
-        header.setBackground(new Color(101, 116, 205)); // Color morado del diseño
+        header.setBackground(new Color(101, 116, 205));
         header.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(101, 116, 205), 15, true), // Bordes redondeados simulados
+                BorderFactory.createLineBorder(new Color(101, 116, 205), 15, true),
                 BorderFactory.createEmptyBorder(30, 35, 30, 35)));
 
-        // Título principal
         JLabel lblTitulo = new JLabel("📋 Gestor de Tareas");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 32));
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Subtítulo
         JLabel lblSubtitulo = new JLabel("Organiza y gestiona tus eventos y tareas diarias");
         lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         lblSubtitulo.setForeground(new Color(255, 255, 255, 200));
@@ -227,16 +215,14 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private JPanel crearPanelEstadisticas() {
-        JPanel panel = new JPanel(new GridLayout(1, 3, 20, 0)); // Espacio más pequeño entre tarjetas
-        panel.setBackground(new Color(240, 242, 245)); // Fondo gris claro
+        JPanel panel = new JPanel(new GridLayout(1, 3, 20, 0));
+        panel.setBackground(new Color(240, 242, 245));
 
-        // Obtener estadísticas reales
         List<Evento> eventos = agendaControlador.getEventoControlador().obtenerEventosUsuario();
         int totalTareas = eventos.size();
         int pendientes = (int) eventos.stream().filter(e -> e.getEstado() == EstadoEvento.PENDIENTE).count();
         int completadas = (int) eventos.stream().filter(e -> e.getEstado() == EstadoEvento.COMPLETADO).count();
 
-        // Crear tarjetas de estadísticas con fondo de color
         panel.add(crearTarjetaEstadistica("TOTAL TAREAS", String.valueOf(totalTareas), new Color(52, 144, 220), "📊"));
         panel.add(crearTarjetaEstadistica("PENDIENTES", String.valueOf(pendientes), new Color(255, 159, 67), "⏳"));
         panel.add(crearTarjetaEstadistica("COMPLETADAS", String.valueOf(completadas), new Color(95, 195, 134), "✅"));
@@ -247,24 +233,21 @@ public class VentanaPrincipal extends JFrame {
     private JPanel crearTarjetaEstadistica(String titulo, String valor, Color colorBorde, String icono) {
         JPanel tarjeta = new JPanel();
         tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
-        tarjeta.setBackground(colorBorde); // Fondo con el color en lugar del borde
+        tarjeta.setBackground(colorBorde);
 
-        // Crear tarjeta más pequeña con bordes redondeados más delgados
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(colorBorde, 3, true), // Borde más delgado
-                BorderFactory.createEmptyBorder(20, 20, 20, 20) // Padding más pequeño
+                BorderFactory.createLineBorder(colorBorde, 3, true),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
 
-        // Título con mejor contraste sobre fondo de color
         JLabel lblTitulo = new JLabel(titulo);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 13)); // Fuente ligeramente más grande
-        lblTitulo.setForeground(Color.WHITE); // Texto blanco sobre fondo de color
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Valor más pequeño con contraste mejorado
         JLabel lblValor = new JLabel(valor);
-        lblValor.setFont(new Font("Segoe UI", Font.BOLD, 40)); // Fuente más grande para mejor legibilidad
-        lblValor.setForeground(Color.WHITE); // Texto blanco sobre fondo de color
+        lblValor.setFont(new Font("Segoe UI", Font.BOLD, 40));
+        lblValor.setForeground(Color.WHITE);
         lblValor.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         tarjeta.add(lblTitulo);
@@ -276,17 +259,19 @@ public class VentanaPrincipal extends JFrame {
 
     private JPanel crearPanelFiltros() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(240, 242, 245)); // Fondo gris claro
+        panel.setBackground(new Color(240, 242, 245));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // Panel izquierdo - Filtros
         JPanel filtrosIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         filtrosIzq.setBackground(new Color(240, 242, 245));
 
-        // Botones de filtro con mejor estilo
-        JButton btnTodas = crearBotonFiltro("Todas", true);
-        JButton btnPendientes = crearBotonFiltro("Pendientes", false);
-        JButton btnCompletadas = crearBotonFiltro("Completadas", false);
+        btnTodas = crearBotonFiltro("Todas", true);
+        btnPendientes = crearBotonFiltro("Pendientes", false);
+        btnCompletadas = crearBotonFiltro("Completadas", false);
+        
+        btnTodas.addActionListener(e -> aplicarFiltro(FiltroTarea.TODAS));
+        btnPendientes.addActionListener(e -> aplicarFiltro(FiltroTarea.PENDIENTES));
+        btnCompletadas.addActionListener(e -> aplicarFiltro(FiltroTarea.COMPLETADAS));
 
         filtrosIzq.add(btnTodas);
         filtrosIzq.add(Box.createHorizontalStrut(8));
@@ -294,22 +279,19 @@ public class VentanaPrincipal extends JFrame {
         filtrosIzq.add(Box.createHorizontalStrut(8));
         filtrosIzq.add(btnCompletadas);
 
-        // Panel derecho - Botón Nueva Tarea
         JPanel accionesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         accionesPanel.setBackground(new Color(240, 242, 245));
 
-        // Botón Nueva Tarea como en el diseño
         JButton btnNuevaTarea = new JButton("+ Nueva Tarea");
         btnNuevaTarea.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnNuevaTarea.setBackground(new Color(101, 116, 205));
-        btnNuevaTarea.setForeground(new Color(50, 50, 50)); // Gris muy oscuro igual que los otros
+        btnNuevaTarea.setForeground(new Color(50, 50, 50));
         btnNuevaTarea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(101, 116, 205), 3, true), // Borde más delgado
+                BorderFactory.createLineBorder(new Color(101, 116, 205), 3, true),
                 BorderFactory.createEmptyBorder(12, 20, 12, 20)));
         btnNuevaTarea.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnNuevaTarea.setFocusPainted(false);
 
-        // Efectos hover
         btnNuevaTarea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnNuevaTarea.setBackground(new Color(88, 101, 180));
@@ -320,7 +302,6 @@ public class VentanaPrincipal extends JFrame {
             }
         });
 
-        // Eventos
         btnNuevaTarea.addActionListener(e -> abrirFormularioNuevaTarea());
 
         accionesPanel.add(btnNuevaTarea);
@@ -351,7 +332,6 @@ public class VentanaPrincipal extends JFrame {
                     BorderFactory.createEmptyBorder(10, 20, 10, 20)));
         }
 
-        // Efecto hover como en el diseño
         if (!activo) {
             boton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -381,49 +361,57 @@ public class VentanaPrincipal extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(222, 226, 230), 3, true), // Borde más delgado
+                BorderFactory.createLineBorder(new Color(222, 226, 230), 3, true),
                 BorderFactory.createEmptyBorder(0, 0, 0, 0)));
 
-        // Crear tabla
         String[] columnas = {"ID", "ESTADO", "TÍTULO", "DESCRIPCIÓN", "FECHA INICIO"};
-        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+        modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Tabla de solo lectura
+                return false;
             }
         };
 
-        JTable tabla = new JTable(modelo);
-        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tabla.setRowHeight(60); // Filas más altas como en el diseño
-        tabla.setGridColor(new Color(233, 236, 239));
-        tabla.setSelectionBackground(new Color(232, 240, 254));
-        tabla.setSelectionForeground(new Color(33, 37, 41));
-        tabla.setBackground(new Color(248, 249, 250)); // Fondo gris claro para las filas
-        tabla.setForeground(new Color(33, 37, 41)); // Texto más oscuro y visible
-        tabla.setShowVerticalLines(true);
-        tabla.setShowHorizontalLines(true);
-        tabla.setIntercellSpacing(new Dimension(0, 1));
+        tablaTareas = new JTable(modeloTabla);
+        tablaTareas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tablaTareas.setRowHeight(60);
+        tablaTareas.setGridColor(new Color(233, 236, 239));
+        tablaTareas.setSelectionBackground(new Color(232, 240, 254));
+        tablaTareas.setSelectionForeground(new Color(33, 37, 41));
+        tablaTareas.setBackground(new Color(248, 249, 250));
+        tablaTareas.setForeground(new Color(33, 37, 41));
+        tablaTareas.setShowVerticalLines(true);
+        tablaTareas.setShowHorizontalLines(true);
+        tablaTareas.setIntercellSpacing(new Dimension(0, 1));
 
-        // Header de la tabla como en el diseño con bordes redondeados
-        tabla.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-        tabla.getTableHeader().setBackground(new Color(101, 116, 205)); // Color azul del diseño
-        tabla.getTableHeader().setForeground(new Color(50, 50, 50)); // Gris muy oscuro para mejor legibilidad
-        tabla.getTableHeader().setBorder(BorderFactory.createEmptyBorder(18, 15, 18, 15));
-        tabla.getTableHeader().setReorderingAllowed(false);
-        tabla.getTableHeader().setOpaque(true);
+        tablaTareas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tablaTareas.getTableHeader().setBackground(new Color(101, 116, 205));
+        tablaTareas.getTableHeader().setForeground(new Color(50, 50, 50));
+        tablaTareas.getTableHeader().setBorder(BorderFactory.createEmptyBorder(18, 15, 18, 15));
+        tablaTareas.getTableHeader().setReorderingAllowed(false);
+        tablaTareas.getTableHeader().setOpaque(true);
 
-        // Configurar columnas
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(40);  // ID
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(80); // Título
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(210); // Título
-        tabla.getColumnModel().getColumn(3).setPreferredWidth(310); // Descripción
-        tabla.getColumnModel().getColumn(4).setPreferredWidth(180); // Fecha
+        tablaTareas.getColumnModel().getColumn(0).setPreferredWidth(40);
+        tablaTareas.getColumnModel().getColumn(1).setPreferredWidth(80);
+        tablaTareas.getColumnModel().getColumn(2).setPreferredWidth(210);
+        tablaTareas.getColumnModel().getColumn(3).setPreferredWidth(310);
+        tablaTareas.getColumnModel().getColumn(4).setPreferredWidth(180);
         
-        // Cargar datos
-        cargarDatosTabla(modelo);
+        cargarDatosTabla(modeloTabla);
 
-        JScrollPane scrollPane = new JScrollPane(tabla);
+        tablaTareas.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    int fila = tablaTareas.getSelectedRow();
+                    if (fila >= 0) {
+                        toggleEstadoTarea(fila);
+                    }
+                }
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(tablaTareas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
@@ -434,22 +422,64 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void cargarDatosTabla(DefaultTableModel modelo) {
-        // Limpiar tabla
-        modelo.setRowCount(0);
+        cargarDatosFiltrados();
+    }
 
-        // Obtener eventos del usuario actual
-        List<Evento> eventos = agendaControlador.getEventoControlador().obtenerEventosUsuario();
-
-        // Agregar filas a la tabla
-        for (Evento evento : eventos) {
-            Object[] fila = {
-                evento.getIdEvento(),
-                evento.getEstado(),
-                evento.getTitulo(),
-                evento.getDescripcion() != null ? evento.getDescripcion() : "",
-                evento.getFechaInicioFormateada()
-            };
-            modelo.addRow(fila);
+    private void toggleEstadoTarea(int fila) {
+        try {
+            Object idObj = modeloTabla.getValueAt(fila, 0);
+            if (idObj == null) {
+                return;
+            }
+            
+            int idEvento = (Integer) idObj;
+            
+            Object estadoObj = modeloTabla.getValueAt(fila, 1);
+            EstadoEvento estadoActual = (EstadoEvento) estadoObj;
+            
+            EstadoEvento nuevoEstado;
+            if (estadoActual == EstadoEvento.COMPLETADO) {
+                nuevoEstado = EstadoEvento.PENDIENTE;
+            } else {
+                nuevoEstado = EstadoEvento.COMPLETADO;
+            }
+            
+            UsuarioControlador.ResultadoOperacion resultado = 
+                agendaControlador.getEventoControlador().cambiarEstadoEvento(idEvento, nuevoEstado);
+            
+            if (resultado.isExitoso()) {
+                modeloTabla.setValueAt(nuevoEstado, fila, 1);
+                
+                String mensaje = nuevoEstado == EstadoEvento.COMPLETADO ? 
+                    "✅ Tarea marcada como completada" : 
+                    "⏳ Tarea marcada como pendiente";
+                
+                lblEstado.setText(mensaje);
+                lblEstado.setForeground(nuevoEstado == EstadoEvento.COMPLETADO ? 
+                    new Color(40, 167, 69) : new Color(255, 193, 7));
+                
+                Timer timer = new Timer(3000, e -> {
+                    lblEstado.setText("Sistema listo");
+                    lblEstado.setForeground(new Color(108, 117, 125));
+                });
+                timer.setRepeats(false);
+                timer.start();
+                
+                SwingUtilities.invokeLater(() -> cargarDatosFiltrados());
+                
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Error al actualizar el estado de la tarea: " + resultado.getMensaje(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error inesperado: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -458,18 +488,95 @@ public class VentanaPrincipal extends JFrame {
         formulario.setVisible(true);
     }
 
-    /**
-     * Método para actualizar los datos del dashboard después de crear una nueva
-     * tarea
-     */
     public void actualizarDatos() {
-        // Recrear el panel de estadísticas y tabla
         if (agendaControlador.getUsuarioControlador().hayUsuarioAutenticado()) {
             SwingUtilities.invokeLater(() -> {
-                // Forzar actualización del dashboard
                 crearPanelDashboard();
                 mostrarPanelDashboard();
+                
+                SwingUtilities.invokeLater(() -> {
+                    actualizarEstadoFiltros();
+                    cargarDatosFiltrados();
+                });
             });
+        }
+    }
+
+    private void aplicarFiltro(FiltroTarea filtro) {
+        this.filtroActual = filtro;
+        
+        actualizarEstadoFiltros();
+        cargarDatosFiltrados();
+        
+        String mensaje = switch (filtro) {
+            case TODAS -> "📋 Mostrando todas las tareas";
+            case PENDIENTES -> "⏳ Mostrando tareas pendientes";
+            case COMPLETADAS -> "✅ Mostrando tareas completadas";
+        };
+        
+        lblEstado.setText(mensaje);
+        lblEstado.setForeground(new Color(108, 117, 125));
+        
+        Timer timer = new Timer(2000, e -> {
+            lblEstado.setText("Sistema listo");
+            lblEstado.setForeground(new Color(108, 117, 125));
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+    
+    private void actualizarEstadoFiltros() {
+        configurarBotonFiltro(btnTodas, false);
+        configurarBotonFiltro(btnPendientes, false);
+        configurarBotonFiltro(btnCompletadas, false);
+        
+        switch (filtroActual) {
+            case TODAS -> configurarBotonFiltro(btnTodas, true);
+            case PENDIENTES -> configurarBotonFiltro(btnPendientes, true);
+            case COMPLETADAS -> configurarBotonFiltro(btnCompletadas, true);
+        }
+    }
+    
+    private void configurarBotonFiltro(JButton boton, boolean activo) {
+        if (activo) {
+            boton.setBackground(new Color(101, 116, 205));
+            boton.setForeground(new Color(50, 50, 50));
+            boton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(101, 116, 205), 3, true),
+                    BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+        } else {
+            boton.setBackground(Color.WHITE);
+            boton.setForeground(new Color(50, 50, 50));
+            boton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(222, 226, 230), 3, true),
+                    BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+        }
+    }
+    
+    private void cargarDatosFiltrados() {
+        modeloTabla.setRowCount(0);
+
+        List<Evento> eventos = agendaControlador.getEventoControlador().obtenerEventosUsuario();
+
+        List<Evento> eventosFiltrados = eventos.stream()
+            .filter(evento -> {
+                return switch (filtroActual) {
+                    case TODAS -> true;
+                    case PENDIENTES -> evento.getEstado() == EstadoEvento.PENDIENTE;
+                    case COMPLETADAS -> evento.getEstado() == EstadoEvento.COMPLETADO;
+                };
+            })
+            .toList();
+
+        for (Evento evento : eventosFiltrados) {
+            Object[] fila = {
+                evento.getIdEvento(),
+                evento.getEstado(),
+                evento.getTitulo(),
+                evento.getDescripcion() != null ? evento.getDescripcion() : "",
+                evento.getFechaInicioFormateada()
+            };
+            modeloTabla.addRow(fila);
         }
     }
 
@@ -580,9 +687,6 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    /**
-     * Método principal para ejecutar la aplicación
-     */
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

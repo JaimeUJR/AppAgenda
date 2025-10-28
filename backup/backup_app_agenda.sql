@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-10-2025 a las 14:18:15
+-- Tiempo de generación: 28-10-2025 a las 20:32:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -215,7 +215,11 @@ CREATE TABLE `eventos` (
 INSERT INTO `eventos` (`id_evento`, `id_usuario`, `titulo`, `descripcion`, `fecha_inicio`, `fecha_fin`, `ubicacion`, `recordatorio`, `estado`, `fecha_creacion`) VALUES
 (1, 1, 'Reunión de equipo', 'Revisión semanal del proyecto', '2025-10-28 10:00:00', '2025-10-28 11:00:00', 'Sala de conferencias', 1, 'pendiente', '2025-10-28 12:53:39'),
 (2, 1, 'Cita médica', 'Chequeo anual', '2025-10-29 15:00:00', '2025-10-29 16:00:00', 'Hospital Central', 1, 'pendiente', '2025-10-28 12:53:39'),
-(3, 2, 'Cumpleaños de Ana', 'Celebración familiar', '2025-11-05 18:00:00', '2025-11-05 22:00:00', 'Casa', 1, 'pendiente', '2025-10-28 12:53:39');
+(3, 2, 'Cumpleaños de Ana', 'Celebración familiar', '2025-11-05 18:00:00', '2025-11-05 22:00:00', 'Casa', 1, 'pendiente', '2025-10-28 12:53:39'),
+(4, 3, 'Tarea 1', 'Test 1', '2025-10-28 12:28:26', '2025-10-28 13:28:26', '', 0, 'pendiente', '2025-10-28 17:28:46'),
+(5, 3, 'tarea 2', 'test 2', '2025-10-28 12:29:08', '2025-10-28 13:29:08', '', 0, 'pendiente', '2025-10-28 17:29:15'),
+(6, 3, 'Test 1', 'dsjkcvnewrj', '2025-11-03 12:46:00', '2025-11-26 13:46:00', 'aixcn', 0, 'completado', '2025-10-28 17:47:42'),
+(7, 3, 'test final', 'test final', '2025-10-28 14:30:46', '2025-11-02 15:30:00', 'test 3', 0, 'pendiente', '2025-10-28 19:31:04');
 
 -- --------------------------------------------------------
 
@@ -258,8 +262,11 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `email`, `password`, `nombre_completo`, `fecha_registro`, `ultimo_acceso`) VALUES
-(1, 'jperez', 'jperez@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Juan Pérez', '2025-10-28 12:53:38', NULL),
-(2, 'mgarcia', 'mgarcia@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'María García', '2025-10-28 12:53:38', NULL);
+(1, 'jperez', 'jperez@email.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'Juan Pérez', '2025-10-28 12:53:38', '2025-10-28 18:48:30'),
+(2, 'mgarcia', 'mgarcia@email.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'María García', '2025-10-28 12:53:38', NULL),
+(3, 'Jaime', 'jaime@gmail.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'Jaime Rodrgiuez', '2025-10-28 14:06:56', '2025-10-28 19:30:44'),
+(4, 'Tester', 'tester@gmail.com', 'Test123', 'Test 1 Crear', '2025-10-28 18:35:56', NULL),
+(5, 'Jaime 2', 'james@gmail.com', '942fcbf9d045db7bb760fd9140972591e3173fd0bc314bea55aedf33555bef89', 'Jaime Rodriguezzz', '2025-10-28 19:30:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -417,13 +424,13 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de la tabla `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id_evento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_evento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas

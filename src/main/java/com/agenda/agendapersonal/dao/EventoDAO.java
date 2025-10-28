@@ -7,11 +7,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DAO para la gestión de eventos en la base de datos
- * 
- * @author JaimeSQL
- */
 public class EventoDAO {
     
     private ConexionBD conexionBD;

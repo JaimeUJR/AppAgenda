@@ -6,11 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DAO para la gestión de usuarios en la base de datos
- * 
- * @author JaimeSQL
- */
 public class UsuarioDAO {
     
     private ConexionBD conexionBD;

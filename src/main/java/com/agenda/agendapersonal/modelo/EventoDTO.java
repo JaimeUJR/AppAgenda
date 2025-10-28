@@ -1,12 +1,5 @@
 package com.agenda.agendapersonal.modelo;
 
-/**
- * DTO (Data Transfer Object) para representar los datos de la vista v_eventos
- * Esta clase corresponde a la vista de la base de datos que une eventos con
- * usuarios y categorías
- * 
- * @author JaimeSQL
- */
 public class EventoDTO {
 
     private int idEvento;

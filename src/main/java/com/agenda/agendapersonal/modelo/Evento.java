@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Clase modelo que representa un evento/cita en la agenda personal
- * 
- * @author JaimeSQL
- */
 public class Evento {
 
     private int idEvento;
