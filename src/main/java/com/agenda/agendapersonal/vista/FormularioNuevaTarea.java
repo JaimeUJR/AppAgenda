@@ -41,34 +41,36 @@ public class FormularioNuevaTarea extends JDialog {
         setLocationRelativeTo(ventanaPadre);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
-        
+
         // Panel principal con fondo gris claro
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(new Color(240, 242, 245));
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        
+
         // Header del formulario
         JPanel headerPanel = crearHeader();
-        
+
         // Panel del formulario
         JPanel formularioPanel = crearFormulario();
-        
+
         // Panel de botones
         JPanel botonesPanel = crearPanelBotones();
-        
+
         panelPrincipal.add(headerPanel, BorderLayout.NORTH);
         panelPrincipal.add(formularioPanel, BorderLayout.CENTER);
         panelPrincipal.add(botonesPanel, BorderLayout.SOUTH);
-        
+
         // Agregar JScrollPane para permitir scroll en todo el formulario
         JScrollPane scrollPane = new JScrollPane(panelPrincipal);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Scroll más suave
-        
+
         add(scrollPane, BorderLayout.CENTER);
-    }    private JPanel crearHeader() {
+    }
+
+    private JPanel crearHeader() {
         JPanel headerContainer = new JPanel(new BorderLayout());
         headerContainer.setBackground(new Color(240, 242, 245));
         headerContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
@@ -128,7 +130,7 @@ public class FormularioNuevaTarea extends JDialog {
         spnFechaInicio.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         panel.add(crearCampoConComponente("Fecha de Inicio:", spnFechaInicio));
         panel.add(Box.createVerticalStrut(20));
-        
+
         // Fecha de fin (una hora después)
         cal.add(Calendar.HOUR_OF_DAY, 1);
         spnFechaFin = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MINUTE));
@@ -243,10 +245,10 @@ public class FormularioNuevaTarea extends JDialog {
         JScrollPane scrollPane = (JScrollPane) getContentPane().getComponent(0);
         JPanel panelPrincipal = (JPanel) scrollPane.getViewport().getView();
         JPanel botonesPanel = (JPanel) panelPrincipal.getComponent(2); // Panel de botones es el tercer componente
-        
+
         // Buscar botones en el panel de botones
         Component[] components = botonesPanel.getComponents();
-        
+
         for (Component comp : components) {
             if (comp instanceof JButton) {
                 JButton btn = (JButton) comp;
@@ -257,7 +259,9 @@ public class FormularioNuevaTarea extends JDialog {
                 }
             }
         }
-    }    private void guardarTarea() {
+    }
+
+    private void guardarTarea() {
         try {
             // Validar campos obligatorios
             if (txtTitulo.getText().trim().isEmpty()) {
@@ -268,21 +272,21 @@ public class FormularioNuevaTarea extends JDialog {
             // Obtener fechas de los spinners
             Date fechaInicioDate = (Date) spnFechaInicio.getValue();
             Date fechaFinDate = (Date) spnFechaFin.getValue();
-            
+
             // Convertir Date a LocalDateTime
             LocalDateTime fechaInicio = fechaInicioDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
             LocalDateTime fechaFin = fechaFinDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-                
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+
             // Validar que la fecha de fin sea posterior a la de inicio
             if (fechaFin.isBefore(fechaInicio)) {
-                JOptionPane.showMessageDialog(this, 
-                    "La fecha de fin debe ser posterior a la fecha de inicio", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "La fecha de fin debe ser posterior a la fecha de inicio",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
