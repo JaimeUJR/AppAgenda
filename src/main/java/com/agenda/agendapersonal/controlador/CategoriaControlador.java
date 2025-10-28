@@ -6,11 +6,6 @@ import com.agenda.agendapersonal.modelo.CategoriaDTO;
 import com.agenda.agendapersonal.config.Constantes;
 import java.util.List;
 
-/**
- * Controlador para la gestión de categorías
- * 
- * @author JaimeSQL
- */
 public class CategoriaControlador {
     
     private CategoriaDAO categoriaDAO;

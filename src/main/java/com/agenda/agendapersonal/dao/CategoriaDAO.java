@@ -7,11 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DAO para la gestión de categorías en la base de datos
- * 
- * @author JaimeSQL
- */
 public class CategoriaDAO {
     
     private ConexionBD conexionBD;

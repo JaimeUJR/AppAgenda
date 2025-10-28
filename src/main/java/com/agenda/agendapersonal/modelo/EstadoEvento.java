@@ -1,10 +1,5 @@
 package com.agenda.agendapersonal.modelo;
 
-/**
- * Enumeración que representa los posibles estados de un evento
- * 
- * @author JaimeSQL
- */
 public enum EstadoEvento {
 
     PENDIENTE("pendiente", "Pendiente", "⏳"),

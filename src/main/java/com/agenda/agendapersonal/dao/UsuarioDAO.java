@@ -6,11 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DAO para la gestión de usuarios en la base de datos
- * 
- * @author JaimeSQL
- */
 public class UsuarioDAO {
     
     private ConexionBD conexionBD;
@@ -23,7 +18,7 @@ public class UsuarioDAO {
      * Crear un nuevo usuario
      */
     public boolean crear(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nombre_usuario, email, password, nombre_completo) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nombre_usuario, email, password, nombre_completo) VALUES (?, ?, SHA2(?, 256), ?)";
         
         try (Connection conn = conexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -127,22 +122,23 @@ public class UsuarioDAO {
      * Autenticar usuario (verificar credenciales)
      */
     public Usuario autenticar(String nombreUsuario, String password) {
-        String sql = "SELECT id_usuario, nombre_usuario, email, password, nombre_completo, fecha_registro, ultimo_acceso FROM usuarios WHERE nombre_usuario = ?";
+        String sql = "SELECT id_usuario, nombre_usuario, email, password, nombre_completo, fecha_registro, ultimo_acceso FROM usuarios WHERE nombre_usuario = ? AND password = SHA2(?, 256)";
         
         try (Connection conn = conexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setString(1, nombreUsuario);
+            stmt.setString(2, password);
             
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String passwordBD = rs.getString("password");
+//                    String passwordBD = rs.getString("password");
                     // Aquí podrías implementar verificación de hash
-                    if (password.equals(passwordBD)) {
+//                    if (password.equals(passwordBD)) {
                         Usuario usuario = mapearUsuario(rs);
                         actualizarUltimoAcceso(usuario.getIdUsuario());
                         return usuario;
-                    }
+//                    }
                 }
             }
             

@@ -4,11 +4,6 @@ import com.agenda.agendapersonal.dao.UsuarioDAO;
 import com.agenda.agendapersonal.modelo.Usuario;
 import com.agenda.agendapersonal.config.Constantes;
 
-/**
- * Controlador para la gestión de usuarios
- * 
- * @author JaimeSQL
- */
 public class UsuarioControlador {
     
     private UsuarioDAO usuarioDAO;
@@ -18,9 +13,6 @@ public class UsuarioControlador {
         this.usuarioDAO = new UsuarioDAO();
     }
     
-    /**
-     * Registrar un nuevo usuario
-     */
     public ResultadoOperacion registrarUsuario(String nombreUsuario, String email, String password, String nombreCompleto) {
         // Validaciones
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
@@ -62,9 +54,6 @@ public class UsuarioControlador {
         }
     }
     
-    /**
-     * Autenticar usuario
-     */
     public ResultadoOperacion iniciarSesion(String nombreUsuario, String password) {
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
             return new ResultadoOperacion(false, "El nombre de usuario es requerido");
@@ -84,16 +73,10 @@ public class UsuarioControlador {
         }
     }
     
-    /**
-     * Cerrar sesión del usuario actual
-     */
     public void cerrarSesion() {
         this.usuarioActual = null;
     }
     
-    /**
-     * Actualizar perfil del usuario
-     */
     public ResultadoOperacion actualizarPerfil(String nombreUsuario, String email, String nombreCompleto) {
         if (usuarioActual == null) {
             return new ResultadoOperacion(false, "No hay usuario autenticado");
@@ -138,9 +121,6 @@ public class UsuarioControlador {
         }
     }
     
-    /**
-     * Cambiar contraseña del usuario
-     */
     public ResultadoOperacion cambiarPassword(String passwordActual, String passwordNuevo, String confirmarPassword) {
         if (usuarioActual == null) {
             return new ResultadoOperacion(false, "No hay usuario autenticado");
@@ -172,9 +152,6 @@ public class UsuarioControlador {
         }
     }
     
-    /**
-     * Validar datos de usuario
-     */
     public ResultadoOperacion validarDatosUsuario(String nombreUsuario, String email, String password, String nombreCompleto) {
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
             return new ResultadoOperacion(false, "El nombre de usuario es requerido");
@@ -211,30 +188,18 @@ public class UsuarioControlador {
         return new ResultadoOperacion(true, "Datos válidos");
     }
     
-    /**
-     * Buscar usuario por ID
-     */
     public Usuario buscarUsuario(int idUsuario) {
         return usuarioDAO.buscarPorId(idUsuario);
     }
     
-    /**
-     * Verificar si hay un usuario autenticado
-     */
     public boolean hayUsuarioAutenticado() {
         return usuarioActual != null;
     }
     
-    /**
-     * Obtener el usuario actual
-     */
     public Usuario getUsuarioActual() {
         return usuarioActual;
     }
     
-    /**
-     * Clase interna para representar el resultado de una operación
-     */
     public static class ResultadoOperacion {
         private boolean exitoso;
         private String mensaje;
