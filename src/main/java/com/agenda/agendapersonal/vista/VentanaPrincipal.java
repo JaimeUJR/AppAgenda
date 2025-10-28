@@ -28,6 +28,10 @@ public class VentanaPrincipal extends JFrame {
     // Paneles de contenido
     private JPanel panelLogin;
     private JPanel panelDashboard;
+    
+    // Componentes de la tabla
+    private JTable tablaTareas;
+    private DefaultTableModel modeloTabla;
 
     public VentanaPrincipal() {
         this.agendaControlador = new AgendaControlador();
@@ -386,44 +390,57 @@ public class VentanaPrincipal extends JFrame {
 
         // Crear tabla
         String[] columnas = {"ID", "ESTADO", "TÍTULO", "DESCRIPCIÓN", "FECHA INICIO"};
-        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+        modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tabla de solo lectura
             }
         };
 
-        JTable tabla = new JTable(modelo);
-        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tabla.setRowHeight(60); // Filas más altas como en el diseño
-        tabla.setGridColor(new Color(233, 236, 239));
-        tabla.setSelectionBackground(new Color(232, 240, 254));
-        tabla.setSelectionForeground(new Color(33, 37, 41));
-        tabla.setBackground(new Color(248, 249, 250)); // Fondo gris claro para las filas
-        tabla.setForeground(new Color(33, 37, 41)); // Texto más oscuro y visible
-        tabla.setShowVerticalLines(true);
-        tabla.setShowHorizontalLines(true);
-        tabla.setIntercellSpacing(new Dimension(0, 1));
+        tablaTareas = new JTable(modeloTabla);
+        tablaTareas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tablaTareas.setRowHeight(60); // Filas más altas como en el diseño
+        tablaTareas.setGridColor(new Color(233, 236, 239));
+        tablaTareas.setSelectionBackground(new Color(232, 240, 254));
+        tablaTareas.setSelectionForeground(new Color(33, 37, 41));
+        tablaTareas.setBackground(new Color(248, 249, 250)); // Fondo gris claro para las filas
+        tablaTareas.setForeground(new Color(33, 37, 41)); // Texto más oscuro y visible
+        tablaTareas.setShowVerticalLines(true);
+        tablaTareas.setShowHorizontalLines(true);
+        tablaTareas.setIntercellSpacing(new Dimension(0, 1));
 
         // Header de la tabla como en el diseño con bordes redondeados
-        tabla.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-        tabla.getTableHeader().setBackground(new Color(101, 116, 205)); // Color azul del diseño
-        tabla.getTableHeader().setForeground(new Color(50, 50, 50)); // Gris muy oscuro para mejor legibilidad
-        tabla.getTableHeader().setBorder(BorderFactory.createEmptyBorder(18, 15, 18, 15));
-        tabla.getTableHeader().setReorderingAllowed(false);
-        tabla.getTableHeader().setOpaque(true);
+        tablaTareas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tablaTareas.getTableHeader().setBackground(new Color(101, 116, 205)); // Color azul del diseño
+        tablaTareas.getTableHeader().setForeground(new Color(50, 50, 50)); // Gris muy oscuro para mejor legibilidad
+        tablaTareas.getTableHeader().setBorder(BorderFactory.createEmptyBorder(18, 15, 18, 15));
+        tablaTareas.getTableHeader().setReorderingAllowed(false);
+        tablaTareas.getTableHeader().setOpaque(true);
 
         // Configurar columnas
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(40);  // ID
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(80); // Título
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(210); // Título
-        tabla.getColumnModel().getColumn(3).setPreferredWidth(310); // Descripción
-        tabla.getColumnModel().getColumn(4).setPreferredWidth(180); // Fecha
+        tablaTareas.getColumnModel().getColumn(0).setPreferredWidth(40);  // ID
+        tablaTareas.getColumnModel().getColumn(1).setPreferredWidth(80); // ESTADO
+        tablaTareas.getColumnModel().getColumn(2).setPreferredWidth(210); // TÍTULO
+        tablaTareas.getColumnModel().getColumn(3).setPreferredWidth(310); // DESCRIPCIÓN
+        tablaTareas.getColumnModel().getColumn(4).setPreferredWidth(180); // FECHA
         
         // Cargar datos
-        cargarDatosTabla(modelo);
+        cargarDatosTabla(modeloTabla);
 
-        JScrollPane scrollPane = new JScrollPane(tabla);
+        // Agregar listener para click en las filas (marcar/desmarcar como completado)
+        tablaTareas.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 1) { // Un solo click
+                    int fila = tablaTareas.getSelectedRow();
+                    if (fila >= 0) {
+                        toggleEstadoTarea(fila);
+                    }
+                }
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(tablaTareas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
@@ -450,6 +467,75 @@ public class VentanaPrincipal extends JFrame {
                 evento.getFechaInicioFormateada()
             };
             modelo.addRow(fila);
+        }
+    }
+
+    /**
+     * Cambiar el estado de una tarea entre completada y pendiente
+     */
+    private void toggleEstadoTarea(int fila) {
+        try {
+            // Obtener el ID del evento de la fila seleccionada
+            Object idObj = modeloTabla.getValueAt(fila, 0); // Columna 0 = ID
+            if (idObj == null) {
+                return;
+            }
+            
+            int idEvento = (Integer) idObj;
+            
+            // Obtener el estado actual desde la tabla
+            Object estadoObj = modeloTabla.getValueAt(fila, 1); // Columna 1 = ESTADO
+            EstadoEvento estadoActual = (EstadoEvento) estadoObj;
+            
+            // Cambiar el estado
+            EstadoEvento nuevoEstado;
+            if (estadoActual == EstadoEvento.COMPLETADO) {
+                nuevoEstado = EstadoEvento.PENDIENTE;
+            } else {
+                nuevoEstado = EstadoEvento.COMPLETADO;
+            }
+            
+            // Actualizar en la base de datos
+            UsuarioControlador.ResultadoOperacion resultado = 
+                agendaControlador.getEventoControlador().cambiarEstadoEvento(idEvento, nuevoEstado);
+            
+            if (resultado.isExitoso()) {
+                // Actualizar la fila en la tabla sin recargar todo
+                modeloTabla.setValueAt(nuevoEstado, fila, 1); // Columna 1 = ESTADO
+                
+                // Mostrar mensaje de confirmación sutil
+                String mensaje = nuevoEstado == EstadoEvento.COMPLETADO ? 
+                    "✅ Tarea marcada como completada" : 
+                    "⏳ Tarea marcada como pendiente";
+                
+                lblEstado.setText(mensaje);
+                lblEstado.setForeground(nuevoEstado == EstadoEvento.COMPLETADO ? 
+                    new Color(40, 167, 69) : new Color(255, 193, 7));
+                
+                // Limpiar mensaje después de 3 segundos
+                Timer timer = new Timer(3000, e -> {
+                    lblEstado.setText("Sistema listo");
+                    lblEstado.setForeground(new Color(108, 117, 125));
+                });
+                timer.setRepeats(false);
+                timer.start();
+                
+                // Actualizar estadísticas del dashboard
+                actualizarDatos();
+                
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Error al actualizar el estado de la tarea: " + resultado.getMensaje(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error inesperado: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
