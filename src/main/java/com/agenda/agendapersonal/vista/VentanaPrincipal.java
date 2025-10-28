@@ -376,7 +376,7 @@ public class VentanaPrincipal extends JFrame {
         ));
         
         // Crear tabla
-        String[] columnas = {"ID", "TÍTULO", "DESCRIPCIÓN", "FECHA INICIO"};
+        String[] columnas = {"ID", "ESTADO", "TÍTULO", "DESCRIPCIÓN", "FECHA INICIO"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -405,10 +405,11 @@ public class VentanaPrincipal extends JFrame {
         tabla.getTableHeader().setOpaque(true);
         
         // Configurar columnas
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(250); // Título
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(350); // Descripción
-        tabla.getColumnModel().getColumn(3).setPreferredWidth(180); // Fecha
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(40);  // ID
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(80); // Título
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(210); // Título
+        tabla.getColumnModel().getColumn(3).setPreferredWidth(310); // Descripción
+        tabla.getColumnModel().getColumn(4).setPreferredWidth(180); // Fecha
         
         // Cargar datos
         cargarDatosTabla(modelo);
@@ -434,6 +435,7 @@ public class VentanaPrincipal extends JFrame {
         for (Evento evento : eventos) {
             Object[] fila = {
                 evento.getIdEvento(),
+                evento.getEstado(),
                 evento.getTitulo(),
                 evento.getDescripcion() != null ? evento.getDescripcion() : "",
                 evento.getFechaInicioFormateada()
