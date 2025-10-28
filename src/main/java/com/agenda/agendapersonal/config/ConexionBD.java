@@ -9,12 +9,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Clase para gestionar la conexión a la base de datos MySQL
- * Utiliza el patrón Singleton para garantizar una sola instancia
- * 
- * @author JaimeSQL
- */
 public class ConexionBD {
     
     private static final Logger logger = LoggerFactory.getLogger(ConexionBD.class);

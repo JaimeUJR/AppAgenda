@@ -3,12 +3,6 @@ package com.agenda.agendapersonal.controlador;
 import com.agenda.agendapersonal.config.ConexionBD;
 import com.agenda.agendapersonal.modelo.Usuario;
 
-/**
- * Controlador principal que coordina todos los demás controladores
- * Actúa como fachada para la aplicación
- * 
- * @author JaimeSQL
- */
 public class AgendaControlador {
     
     private UsuarioControlador usuarioControlador;

@@ -4,11 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-/**
- * Prueba simple del login sin dependencias externas
- * 
- * @author JaimeSQL
- */
 public class TestLogin extends JFrame {
     
     private JPanel panelPrincipal;

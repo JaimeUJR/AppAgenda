@@ -2,13 +2,6 @@ package com.agenda.agendapersonal.modelo;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO (Data Transfer Object) para representar los datos de las vistas de
- * categorías
- * Esta clase corresponde a las vistas v_categorias y v_categorias_usuario
- * 
- * @author JaimeSQL
- */
 public class CategoriaDTO {
 
     private int idCategoria;

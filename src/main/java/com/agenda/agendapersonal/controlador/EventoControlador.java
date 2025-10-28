@@ -8,11 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Controlador para la gestión de eventos
- * 
- * @author JaimeSQL
- */
 public class EventoControlador {
     
     private EventoDAO eventoDAO;
@@ -25,9 +20,6 @@ public class EventoControlador {
         this.usuarioControlador = usuarioControlador;
     }
     
-    /**
-     * Crear un nuevo evento
-     */
     public UsuarioControlador.ResultadoOperacion crearEvento(String titulo, String descripcion, 
             LocalDateTime fechaInicio, LocalDateTime fechaFin, String ubicacion, 
             boolean recordatorio, List<String> nombresCategoria) {
@@ -71,9 +63,6 @@ public class EventoControlador {
         }
     }
     
-    /**
-     * Actualizar un evento existente
-     */
     public UsuarioControlador.ResultadoOperacion actualizarEvento(int idEvento, String titulo, String descripcion,
             LocalDateTime fechaInicio, LocalDateTime fechaFin, String ubicacion, 
             boolean recordatorio, EstadoEvento estado, List<String> nombresCategoria) {

@@ -3,11 +3,6 @@ package com.agenda.agendapersonal.modelo;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Clase modelo que representa una categoría para organizar eventos
- * 
- * @author JaimeSQL
- */
 public class Categoria {
 
     private int idCategoria;
