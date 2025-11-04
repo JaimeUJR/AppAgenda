@@ -45,10 +45,6 @@ Aplicación de escritorio moderna para gestión de tareas personales desarrollad
 AgendaPersonal/
 │
 ├── 📂 backup/                          ← RESPALDOS Y SCRIPTS SQL
-│   ├── backup_app_agenda.sql           ← Base de datos completa
-│   ├── scripts/                        ← Scripts SQL personalizados
-│   ├── dumps/                          ← Copias de seguridad
-│   └── datos_prueba/                   ← Datos de ejemplo
 │
 ├── 📂 src/main/
 │   ├── 📂 java/com/agenda/agendapersonal/
