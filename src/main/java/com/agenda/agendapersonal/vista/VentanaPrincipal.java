@@ -31,6 +31,11 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnCompletadas;
     private FiltroTarea filtroActual = FiltroTarea.TODAS;
     
+    // Referencias a las etiquetas de estadísticas para actualización en tiempo real
+    private JLabel lblTotalTareas;
+    private JLabel lblTareasPendientes;
+    private JLabel lblTareasCompletadas;
+    
     // Campos de login para acceso global
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
@@ -234,7 +239,7 @@ public class VentanaPrincipal extends JFrame {
                 BorderFactory.createLineBorder(new Color(101, 116, 205), 15, true),
                 BorderFactory.createEmptyBorder(30, 35, 30, 35)));
 
-        JLabel lblTitulo = new JLabel("📋 Gestor de Tareas");
+        JLabel lblTitulo = new JLabel("Gestor de Tareas");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 32));
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -261,14 +266,14 @@ public class VentanaPrincipal extends JFrame {
         int pendientes = (int) eventos.stream().filter(e -> e.getEstado() == EstadoEvento.PENDIENTE).count();
         int completadas = (int) eventos.stream().filter(e -> e.getEstado() == EstadoEvento.COMPLETADO).count();
 
-        panel.add(crearTarjetaEstadistica("TOTAL TAREAS", String.valueOf(totalTareas), new Color(52, 144, 220), "📊"));
-        panel.add(crearTarjetaEstadistica("PENDIENTES", String.valueOf(pendientes), new Color(255, 159, 67), "⏳"));
-        panel.add(crearTarjetaEstadistica("COMPLETADAS", String.valueOf(completadas), new Color(95, 195, 134), "✅"));
+        panel.add(crearTarjetaEstadistica("TOTAL TAREAS", String.valueOf(totalTareas), new Color(52, 144, 220), "📊", "total"));
+        panel.add(crearTarjetaEstadistica("PENDIENTES", String.valueOf(pendientes), new Color(255, 159, 67), "⏳", "pendientes"));
+        panel.add(crearTarjetaEstadistica("COMPLETADAS", String.valueOf(completadas), new Color(95, 195, 134), "✅", "completadas"));
 
         return panel;
     }
 
-    private JPanel crearTarjetaEstadistica(String titulo, String valor, Color colorBorde, String icono) {
+    private JPanel crearTarjetaEstadistica(String titulo, String valor, Color colorBorde, String icono, String tipo) {
         JPanel tarjeta = new JPanel();
         tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
         tarjeta.setBackground(colorBorde);
@@ -287,6 +292,13 @@ public class VentanaPrincipal extends JFrame {
         lblValor.setFont(new Font("Segoe UI", Font.BOLD, 40));
         lblValor.setForeground(Color.WHITE);
         lblValor.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Guardar referencias según el tipo
+        switch (tipo) {
+            case "total" -> lblTotalTareas = lblValor;
+            case "pendientes" -> lblTareasPendientes = lblValor;
+            case "completadas" -> lblTareasCompletadas = lblValor;
+        }
 
         tarjeta.add(lblTitulo);
         tarjeta.add(Box.createVerticalStrut(10));
@@ -503,6 +515,9 @@ public class VentanaPrincipal extends JFrame {
                 timer.setRepeats(false);
                 timer.start();
                 
+                // Actualizar estadísticas en tiempo real
+                actualizarEstadisticas();
+                
                 SwingUtilities.invokeLater(() -> cargarDatosFiltrados());
                 
             } else {
@@ -536,6 +551,25 @@ public class VentanaPrincipal extends JFrame {
                     actualizarEstadoFiltros();
                     cargarDatosFiltrados();
                 });
+            });
+        }
+    }
+
+    public void actualizarEstadisticas() {
+        if (agendaControlador.getUsuarioControlador().hayUsuarioAutenticado() && 
+            lblTotalTareas != null && lblTareasPendientes != null && lblTareasCompletadas != null) {
+            
+            SwingUtilities.invokeLater(() -> {
+                // Obtener datos actualizados
+                List<Evento> eventos = agendaControlador.getEventoControlador().obtenerEventosUsuario();
+                int totalTareas = eventos.size();
+                int pendientes = (int) eventos.stream().filter(e -> e.getEstado() == EstadoEvento.PENDIENTE).count();
+                int completadas = (int) eventos.stream().filter(e -> e.getEstado() == EstadoEvento.COMPLETADO).count();
+                
+                // Actualizar las etiquetas directamente
+                lblTotalTareas.setText(String.valueOf(totalTareas));
+                lblTareasPendientes.setText(String.valueOf(pendientes));
+                lblTareasCompletadas.setText(String.valueOf(completadas));
             });
         }
     }
