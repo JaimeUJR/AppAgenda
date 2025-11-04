@@ -31,6 +31,11 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnCompletadas;
     private FiltroTarea filtroActual = FiltroTarea.TODAS;
     
+    // Campos de login para acceso global
+    private JTextField txtUsuario;
+    private JPasswordField txtPassword;
+    private JButton btnCerrarSesion;
+    
     public enum FiltroTarea {
         TODAS, PENDIENTES, COMPLETADAS
     }
@@ -69,8 +74,40 @@ public class VentanaPrincipal extends JFrame {
         lblUsuario.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         lblUsuario.setHorizontalAlignment(SwingConstants.RIGHT);
 
+        // Panel derecho con usuario y botón cerrar sesión
+        JPanel panelDerecho = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        panelDerecho.add(lblUsuario);
+
+        // Crear botón cerrar sesión (inicialmente oculto)
+        btnCerrarSesion = new JButton("Cerrar Sesión");
+        btnCerrarSesion.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        btnCerrarSesion.setForeground(new Color(51, 51, 51));
+        btnCerrarSesion.setBackground(new Color(220, 53, 69));
+        btnCerrarSesion.setBorder(BorderFactory.createEmptyBorder(3, 8, 3, 8));
+        btnCerrarSesion.setFocusPainted(false);
+        btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrarSesion.setVisible(false); // Oculto inicialmente
+        
+        // Efecto hover para el botón
+        btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCerrarSesion.setBackground(new Color(200, 35, 51));
+            }
+            
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCerrarSesion.setBackground(new Color(220, 53, 69));
+            }
+        });
+        
+        // Acción del botón cerrar sesión
+        btnCerrarSesion.addActionListener(e -> cerrarSesion());
+        
+        panelDerecho.add(btnCerrarSesion);
+
         panelEstado.add(lblEstado, BorderLayout.WEST);
-        panelEstado.add(lblUsuario, BorderLayout.EAST);
+        panelEstado.add(panelDerecho, BorderLayout.EAST);
 
         // Crear paneles
         crearPanelLogin();
@@ -93,10 +130,10 @@ public class VentanaPrincipal extends JFrame {
 
         // Campos
         JLabel lblUsuario = new JLabel("Usuario:");
-        JTextField txtUsuario = new JTextField(20);
+        txtUsuario = new JTextField(20);
 
         JLabel lblPassword = new JLabel("Contraseña:");
-        JPasswordField txtPassword = new JPasswordField(20);
+        txtPassword = new JPasswordField(20);
 
         // Botones
         JButton btnLogin = new JButton("Iniciar Sesión");
@@ -189,6 +226,7 @@ public class VentanaPrincipal extends JFrame {
         headerContainer.setBackground(new Color(240, 242, 245));
         headerContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
+        // Panel principal del header
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
         header.setBackground(new Color(101, 116, 205));
@@ -662,10 +700,12 @@ public class VentanaPrincipal extends JFrame {
         if (usuarioAutenticado) {
             Usuario usuario = agendaControlador.getUsuarioControlador().getUsuarioActual();
             lblUsuario.setText("👤 " + usuario.getNombreParaMostrar());
+            btnCerrarSesion.setVisible(true); // Mostrar botón cuando esté autenticado
             System.out.println("DEBUG: Mostrando dashboard para usuario: " + usuario.getNombreParaMostrar());
             mostrarPanelDashboard();
         } else {
             lblUsuario.setText("No autenticado");
+            btnCerrarSesion.setVisible(false); // Ocultar botón cuando no esté autenticado
             System.out.println("DEBUG: Mostrando panel login");
             mostrarPanelLogin();
         }
@@ -684,6 +724,36 @@ public class VentanaPrincipal extends JFrame {
         if (opcion == JOptionPane.YES_OPTION) {
             agendaControlador.finalizarAplicacion();
             System.exit(0);
+        }
+    }
+
+    private void cerrarSesion() {
+        int opcion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Estás seguro de que deseas cerrar sesión?",
+                "Confirmar Cierre de Sesión",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            // Cerrar sesión en el controlador
+            agendaControlador.getUsuarioControlador().cerrarSesion();
+            
+            // Limpiar campos de login
+            txtUsuario.setText("");
+            txtPassword.setText("");
+            
+            // Volver al panel de login
+            mostrarPanelLogin();
+            
+            // Enfocar el campo de usuario
+            SwingUtilities.invokeLater(() -> txtUsuario.requestFocus());
+            
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Sesión cerrada exitosamente",
+                    "Sesión Cerrada",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
